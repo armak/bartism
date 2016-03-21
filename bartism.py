@@ -14,29 +14,31 @@ def generate_markov(input):
 			else:
 				out[key] = [val]
 	return out
-		
+
+def produce_sentence(mc):
+	string = list()
+	pair = random.choice(list(mc.keys()))
+	val  = random.choice(mc[pair])
+	string.extend(pair.split(" "))
+	while(True):
+		string.append(val)
+		pair = (string[-2])+" "+(string[-1])
+		if pair in mc.keys():
+			val = random.choice(mc[pair])
+		else:
+			break
+	sentence = " ".join(string)
+	if not (sentence.endswith(".") or sentence.endswith("?") or sentence.endswith("!")):
+		sentence += "."
+	if sentence.endswith(","):
+		sentence[-1] = "."
+	return sentence.replace(" ,", ",").replace(" !", "!").replace(" ?", "?")
+
+
 def main():
-	db = open("database.db", "r")
-	mc = generate_markov(db)
-	
+	mc = generate_markov(open("database.db", "r"))
 	for i in range(0, int(sys.argv[1])):
-		string = list()
-		pair = random.choice(list(mc.keys()))
-		val  = random.choice(mc[pair])
-		string.extend(pair.split(" "))
-		while(True):
-			string.append(val)
-			pair = (string[-2])+" "+(string[-1])
-			if pair in mc.keys():
-				val = random.choice(mc[pair])
-			else:
-				break
-		sentence = " ".join(string)
-		if not (sentence.endswith(".") or sentence.endswith("?") or sentence.endswith("!")):
-			sentence += "."
-		if sentence.endswith(","):
-			sentence[-1] = "."
-		print(sentence.replace(" ,", ",").replace(" !", "!").replace(" ?", "?"))
+		print(produce_sentence(mc))
 
 if __name__ == "__main__":
 	main()
